@@ -1,0 +1,32 @@
+{
+  "name": "rutas-del-altiplano-puno",
+  "version": "1.0.0",
+  "description": "Plataforma Web de Turismo y Operaciones | Rutas Tradicionales y Joyas Ocultas en Puno - Rutas del Altiplano S.A.C.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "tunnel": "npx localtunnel --port 3000"
+  },
+  "keywords": [
+    "puno",
+    "turismo",
+    "titicaca",
+    "joyas-ocultas",
+    "express",
+    "mysql",
+    "mvc"
+  ],
+  "author": "Rutas del Altiplano S.A.C.",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.9.7",
+    "nodemailer": "^9.0.3",
+    "puppeteer": "^25.3.0"
+  }
+}

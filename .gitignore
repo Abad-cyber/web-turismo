@@ -1,0 +1,8 @@
+node_modules/
+config/.env
+*.bak
+fix.js
+check_error.js
+recovery.js
+init_aiven_db.js
+.DS_Store

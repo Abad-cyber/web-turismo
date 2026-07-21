@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Rutas del Altiplano - Agencia de Turismo y Experiencias en Puno. Descubre las Islas Uros, Taquile, Amantaní y las joyas ocultas del Altiplano peruano. Tours tradicionales y vivenciales desde S/.45." />
+  <meta name="keywords" content="turismo puno, tours puno, lago titicaca, uros taquile, sillustani, amantani, aramu muru, tinajani, joyas ocultas puno, agencia de turismo puno" />
+  <meta name="author" content="Rutas del Altiplano S.A.C." />
+  <meta property="og:title" content="Rutas del Altiplano | Turismo y Experiencias en Puno" />
+  <meta property="og:description" content="Descubre el Puno inexplorado con Rutas del Altiplano. Tours únicos, joyas ocultas y experiencias vivenciales en el corazón del Altiplano." />
+  <meta property="og:type" content="website" />
+  <meta name="robots" content="index, follow" />
+  <title>Rutas del Altiplano | Turismo y Experiencias en Puno</title>
+
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  
+  <!-- Flatpickr (Datepicker tipo Google Calendar) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://npmcdn.com/flatpickr/dist/l10n/es.js"></script>
+</head>
+<body>
+
+<!-- ===================================================
+     PAGE LOADER
+=================================================== -->
+<div id="page-loader">
+  <div class="loader-logo"><i data-lucide="mountain-snow" class="icon-sm"></i> Rutas del Altiplano</div>
+  <div class="loader-spinner"></div>
+</div>
+
+<!-- ===================================================
+     NAVBAR
+=================================================== -->
+<nav class="navbar" id="main-navbar" role="navigation" aria-label="Navegación principal">
+  <div class="navbar-inner">
+    <!-- Logo -->
+    <a href="#inicio" class="nav-logo" id="nav-logo-link">
+      <span class="nav-logo-icon"><i data-lucide="mountain-snow" class="icon-sm"></i></span>
+      <div>
+        <span class="nav-logo-text">Rutas del Altiplano</span>
+        <span class="nav-logo-subtitle">Turismo & Experiencias Puno</span>
+      </div>
+    </a>
+
+    <!-- Desktop Links -->
+    <ul class="nav-links" role="list">
+      <li><a href="#inicio"     class="nav-link active" id="nav-inicio">Inicio</a></li>
+      <li><a href="#tours"      class="nav-link"        id="nav-tours">Tours</a></li>
+      <li><a href="#joyas"      class="nav-link"        id="nav-joyas">Joyas Ocultas</a></li>
+      <li><a href="#nosotros"   class="nav-link"        id="nav-nosotros">Nosotros</a></li>
+      <li><a href="#contacto"   class="nav-link"        id="nav-contacto">Contacto</a></li>
+    </ul>
+
+    <!-- Desktop Actions -->
+    <div class="nav-actions">
+      <button class="btn btn-ghost btn-sm" id="btn-login-nav"    onclick="mostrarModalLogin()">Iniciar Sesión</button>
+      <button class="btn btn-gold  btn-sm" id="btn-register-nav" onclick="mostrarModalRegistro()">Registrarse</button>
+      <button class="btn btn-gold  btn-sm" id="btn-dashboard-nav" style="display:none;" onclick="mostrarDashboard()"><i data-lucide="zap" class="icon-sm"></i> Mi Panel</button>
+    </div>
+
+    <!-- Hamburger -->
+    <button class="nav-hamburger" id="hamburger-btn" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile Drawer -->
+<div class="nav-drawer" id="nav-drawer" role="dialog" aria-label="Menú móvil">
+  <ul class="nav-links" role="list">
+    <li><a href="#inicio"   class="nav-link" onclick="closeDrawer()">Inicio</a></li>
+    <li><a href="#tours"    class="nav-link" onclick="closeDrawer()">Tours</a></li>
+    <li><a href="#joyas"    class="nav-link" onclick="closeDrawer()">Joyas Ocultas</a></li>
+    <li><a href="#nosotros" class="nav-link" onclick="closeDrawer()">Nosotros</a></li>
+    <li><a href="#contacto" class="nav-link" onclick="closeDrawer()">Contacto</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn btn-ghost" id="btn-login-mobile"    onclick="closeDrawer(); mostrarModalLogin();">Iniciar Sesión</button>
+    <button class="btn btn-gold"  id="btn-register-mobile" onclick="closeDrawer(); mostrarModalRegistro();">Registrarse</button>
+    <button class="btn btn-gold"  id="btn-dashboard-mobile" style="display:none;" onclick="closeDrawer(); mostrarDashboard();"><i data-lucide="zap" class="icon-sm"></i> Mi Panel</button>
+  </div>
+</div>
+
+<!-- ===================================================
+     LANDING PAGE (oculta cuando está el dashboard)
+=================================================== -->
+<div id="landing-page">
+
+  <!-- ========== HERO SECTION ========== -->
+  <section class="hero" id="inicio" aria-label="Sección principal">
+    <div class="hero-bg" role="img" aria-label="Paisaje del Altiplano peruano"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-overlay-bottom"></div>
+
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        <i data-lucide="mountain" class="icon-sm"></i> Descubre el Puno Inexplorado
+      </div>
+
+      <h1 class="hero-title">
+        Rutas <span class="gold">Tradicionales</span> &<br/>
+        Joyas Ocultas del<br/>
+        Altiplano
+      </h1>
+
+      <p class="hero-desc">
+        Desde las sagradas orillas del Lago Titicaca hasta cañones y bosques de piedras
+        milenarios. Vive experiencias únicas con guías locales expertos.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#tours" class="btn btn-gold btn-lg" id="btn-hero-explorar">
+          <i data-lucide="map" class="icon-sm"></i> Explorar Tours
+        </a>
+        <a href="#nosotros" class="btn btn-ghost btn-lg" id="btn-hero-como">
+           Cómo Funciona
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-number" data-target="8" id="counter-destinos">0</span>
+          <span class="hero-stat-label">Destinos</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" data-target="5" id="counter-joyas">0</span>
+          <span class="hero-stat-label">Joyas Ocultas</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" data-target="3" id="counter-guias">0</span>
+          <span class="hero-stat-label">Guías Locales</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-number" data-target="3812" id="counter-altitud">0</span>
+          <span class="hero-stat-label">m.s.n.m. Inicio</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wave Bottom -->
+    <div class="wave-divider" style="position:absolute;bottom:0;left:0;right:0;">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="#0A0A0D"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ========== TOUR CATALOG SECTION ========== -->
+  <section class="catalog-section section" id="tours" aria-labelledby="tours-title">
+    <div class="container">
+      <div class="catalog-header reveal">
+        <span class="section-tag"><i data-lucide="ticket" class="icon-sm"></i> Catálogo Completo</span>
+        <h2 class="section-title" id="tours-title">
+          Nuestros <span>Tours</span>
+        </h2>
+        <p class="section-subtitle" style="margin:0 auto;">
+          Elige entre rutas tradicionales y experiencias únicas en destinos poco explorados del Altiplano puneño.
+        </p>
+      </div>
+
+      <!-- Controls -->
+      <div class="catalog-controls">
+        <div class="search-bar">
+          <input
+            type="text"
+            id="search-tours"
+            placeholder="Buscar tour por nombre o destino..."
+            aria-label="Buscar tours"
+            oninput="buscarTours(this.value)"
+          />
+        </div>
+
+        <div class="filter-tabs" role="tablist" aria-label="Filtrar por categoría">
+          <button class="filter-tab active" id="tab-todos"       role="tab" onclick="filtrarPorCategoria('todos')"><i data-lucide="globe" class="icon-sm"></i> Todos</button>
+          <button class="filter-tab"        id="tab-tradicional" role="tab" onclick="filtrarPorCategoria('Tradicional')"><i data-lucide="star" class="icon-sm"></i> Tradicional</button>
+          <button class="filter-tab"        id="tab-joya"        role="tab" onclick="filtrarPorCategoria('Joya Oculta')"><i data-lucide="gem" class="icon-sm"></i> Joya Oculta</button>
+          <button class="filter-tab"        id="tab-vivencial"   role="tab" onclick="filtrarPorCategoria('Vivencial')"><i data-lucide="tent" class="icon-sm"></i> Vivencial</button>
+        </div>
+      </div>
+
+      <!-- Tours Grid -->
+      <div class="tours-grid" id="tours-grid" role="list" aria-label="Listado de tours">
+        <!-- Se carga dinámicamente con JavaScript -->
+        <div class="empty-state">
+          <div class="empty-state-icon"><i data-lucide="mountain" class="icon-sm"></i></div>
+          <p>Cargando tours...</p>
+        </div>
+      </div>
+
+      <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
+        <button class="btn btn-ghost" id="btn-load-more" onclick="cargarMas()">Cargar más tours </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wave -->
+  <div style="background:#0A0A0D; line-height:0;">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,30 C720,60 720,0 1440,30 L1440,60 L0,60 Z" fill="#121217"/>
+    </svg>
+  </div>
+
+  <!-- ========== JOYAS OCULTAS BANNER ========== -->
+  <section class="joyas-banner section" id="joyas" aria-labelledby="joyas-title">
+    <div class="joyas-banner-bg" role="img" aria-label="Paisaje de joyas ocultas del Altiplano"></div>
+    <div class="joyas-banner-overlay"></div>
+
+    <div class="joyas-banner-content reveal">
+      <div class="joyas-banner-icon"><i data-lucide="gem" class="icon-sm"></i></div>
+      <h2 class="joyas-banner-title" id="joyas-title">
+        Las <span class="emerald">Joyas Ocultas</span><br/>del Altiplano
+      </h2>
+      <p class="joyas-banner-desc">
+        Más allá del turismo masivo existen lugares que guardan secretos milenarios. Aramu Muru,
+        Tinajani, Pucará, Llachón y Kutimbo son destinos que pocas agencias muestran.
+        Nosotros te llevamos ahí.
+      </p>
+      <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-emerald btn-lg" id="btn-ver-joyas" onclick="filtrarPorCategoria('Joya Oculta'); document.getElementById('tours').scrollIntoView({behavior:'smooth'});">
+          <i data-lucide="gem" class="icon-sm"></i> Descubrir Ahora
+        </button>
+        <button class="btn btn-ghost btn-lg" id="btn-cotizar-joyas" onclick="document.getElementById('cotizador').scrollIntoView({behavior:'smooth'});">
+          <i data-lucide="clipboard-list" class="icon-sm"></i> Solicitar Cotización
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wave -->
+  <div style="background:#121217; line-height:0;">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,0 C360,60 1080,0 1440,30 L1440,0 Z" fill="#0A0A0D"/>
+    </svg>
+  </div>
+
+  <!-- ========== SOBRE NOSOTROS ========== -->
+  <section class="about-section section" id="nosotros" aria-labelledby="nosotros-title">
+    <div class="container">
+      <div class="grid-2">
+        <!-- Imagen -->
+        <div class="about-img-wrapper reveal-left">
+          <img src="img/about_agency.jpg" alt="Equipo de Rutas del Altiplano en el Lago Titicaca" loading="lazy" />
+          <div class="about-img-badge">
+            <span style="font-size:2rem;"><i data-lucide="trophy" class="icon-sm"></i></span>
+            <div>
+              <div style="font-family:var(--font-title);font-weight:700;color:var(--gold-primary);font-size:0.95rem;">Agencia Certificada</div>
+              <div style="font-size:0.78rem;color:var(--text-muted);">MINCETUR  DIRCETUR Puno</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenido -->
+        <div class="about-content reveal-right">
+          <div>
+            <span class="section-tag"><i data-lucide="mountain-snow" class="icon-sm"></i> Nuestra Historia</span>
+            <h2 class="section-title" id="nosotros-title">
+              Descentralizando el<br/><span>Turismo en Puno</span>
+            </h2>
+            <p class="section-subtitle">
+              Somos una agencia puneña que conecta a viajeros curiosos con las joyas poco exploradas del Altiplano,
+              preservando la cultura viva de las comunidades locales.
+            </p>
+          </div>
+
+          <!-- Misión y Visión -->
+          <div style="display:flex;flex-direction:column;gap:var(--sp-md);">
+            <div class="about-info-item" style="border-color:var(--border-gold);">
+              <span class="icon"><i data-lucide="target" class="icon-sm"></i></span>
+              <div>
+                <div class="about-info-label">Misión</div>
+                <div class="about-info-value">Descentralizar el turismo masivo conectando viajeros con joyas ocultas poco exploradas del Altiplano puneño.</div>
+              </div>
+            </div>
+            <div class="about-info-item">
+              <span class="icon"><i data-lucide="telescope" class="icon-sm"></i></span>
+              <div>
+                <div class="about-info-label">Visión</div>
+                <div class="about-info-value">Ser la agencia líder en turismo sostenible y experiencial de la región Puno al 2030.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="about-stats">
+            <div class="about-stat reveal">
+              <span class="about-stat-num">6+</span>
+              <span class="about-stat-label">Años de experiencia</span>
+            </div>
+            <div class="about-stat reveal">
+              <span class="about-stat-num">1,200+</span>
+              <span class="about-stat-label">Tours realizados</span>
+            </div>
+            <div class="about-stat reveal">
+              <span class="about-stat-num">98%</span>
+              <span class="about-stat-label">Clientes satisfechos</span>
+            </div>
+          </div>
+
+          <!-- Info Grid -->
+          <div class="about-info-grid">
+            <div class="about-info-item">
+              <span class="icon"><i data-lucide="building-2" class="icon-sm"></i></span>
+              <div>
+                <div class="about-info-label">RUC</div>
+                <div class="about-info-value">20609876541</div>
+              </div>
+            </div>
+            <div class="about-info-item">
+              <span class="icon"><i data-lucide="map-pin" class="icon-sm"></i></span>
+              <div>
+                <div class="about-info-label">Dirección</div>
+                <div class="about-info-value">Jr. Lima N° 458, Plaza de Armas, Puno</div>
+              </div>
+            </div>
+            <div class="about-info-item">
+              <span class="icon"><i data-lucide="smartphone" class="icon-sm"></i></span>
+              <div>
+                <div class="about-info-label">WhatsApp</div>
+                <div class="about-info-value">+51 930 844 635</div>
+              </div>
+            </div>
+            <div class="about-info-item">
+              <span class="icon"><i data-lucide="mail" class="icon-sm"></i></span>
+              <div>
+                <div class="about-info-label">Email</div>
+                <div class="about-info-value">contacto@rutasdelaltiplano.pe</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Wave -->
+  <div style="background:#121217;line-height:0;">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C480,0 960,60 1440,20 L1440,0 L0,0 Z" fill="#0A0A0D"/>
+    </svg>
+  </div>
+
+  <!-- ========== COTIZADOR SECTION ========== -->
+  <section class="cotizador-section section" id="cotizador" aria-labelledby="cotizador-title">
+    <div class="container">
+      <div class="cotizador-box reveal">
+        <span class="section-tag"><i data-lucide="clipboard-list" class="icon-sm"></i> Personalizado</span>
+        <h2 class="section-title" id="cotizador-title">
+          Tu <span>Ruta a la Medida</span>
+        </h2>
+        <p class="section-subtitle">
+          ¿Tienes un grupo o fechas especiales? Diseñamos una ruta personalizada con los destinos que eliges.
+          Solo para usuarios registrados.
+        </p>
+
+        <!-- Formulario para usuarios logueados -->
+        <div id="cotizador-form-wrap" style="display:none;">
+          <form class="cotizador-form" id="form-cotizacion" onsubmit="handleCotizacion(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="cot-nombre">Tu nombre completo *</label>
+                <input type="text" id="cot-nombre" class="form-input" placeholder="Ej. María González" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cot-email">Correo electrónico *</label>
+                <input type="email" id="cot-email" class="form-input" placeholder="tu@email.com" required />
+              </div>
+            </div>
+
+            <div class="checkbox-group">
+              <div class="checkbox-group-label"><i data-lucide="gem" class="icon-sm"></i> Joyas Ocultas de interés (selecciona las que quieras explorar)</div>
+              <div class="checkbox-grid">
+                <label class="checkbox-item">
+                  <input type="checkbox" name="destinos" value="Aramu Muru" id="chk-aramu" />
+                  <i data-lucide="eye" class="icon-sm"></i> Aramu Muru
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="destinos" value="Tinajani" id="chk-tinajani" />
+                  <i data-lucide="mountain" class="icon-sm"></i> Cañón de Tinajani
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="destinos" value="Pucará y Lampa" id="chk-pucara" />
+                  <i data-lucide="map" class="icon-sm"></i> Ruta del Torito (Pucará)
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="destinos" value="Llachón" id="chk-llachon" />
+                  <i data-lucide="waves" class="icon-sm"></i> Kayak en Llachón
+                </label>
+                <label class="checkbox-item">
+                  <input type="checkbox" name="destinos" value="Kutimbo" id="chk-kutimbo" />
+                  <i data-lucide="landmark" class="icon-sm"></i> Chullpas de Kutimbo
+                </label>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="cot-fecha">Fecha tentativa *</label>
+                <input type="date" id="cot-fecha" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="cot-personas">Número de personas *</label>
+                <input type="number" id="cot-personas" class="form-input" min="1" max="50" placeholder="Ej. 4" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="cot-mensaje">Mensaje adicional o requerimientos especiales</label>
+              <textarea id="cot-mensaje" class="form-textarea" placeholder="Cuéntanos sobre tu grupo, necesidades especiales, alergias alimentarias, etc."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-gold btn-lg" id="btn-cotizar-submit" style="align-self:flex-start;">
+              <i data-lucide="clipboard-list" class="icon-sm"></i> Solicitar Cotización Personalizada
+            </button>
+          </form>
+        </div>
+
+        <!-- Mensaje para no logueados -->
+        <div id="cotizador-auth-msg" class="cotizador-auth-msg">
+          <span class="icon"><i data-lucide="lock" class="icon-sm"></i></span>
+          <p style="margin-bottom:1rem;color:var(--text-light);">
+            Para solicitar una cotización personalizada necesitas una cuenta.
+          </p>
+          <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-gold" id="btn-cotiz-login" onclick="mostrarModalLogin()">Iniciar Sesión</button>
+            <button class="btn btn-ghost" id="btn-cotiz-reg" onclick="mostrarModalRegistro()">Crear Cuenta Gratis</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer" id="contacto" role="contentinfo" aria-label="Pie de página">
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand -->
+        <div>
+          <div class="footer-brand-logo">
+            <span class="icon"><i data-lucide="mountain-snow" class="icon-sm"></i></span>
+            <div>
+              <div class="footer-brand-name">Rutas del Altiplano</div>
+              <div style="font-size:0.72rem;color:var(--text-subtle);">Turismo & Experiencias S.A.C.</div>
+            </div>
+          </div>
+          <p class="footer-desc">
+            Conectamos viajeros con la esencia auténtica del Altiplano peruano. Desde las Islas Flotantes hasta las joyas ocultas que pocos conocen.
+          </p>
+
+        </div>
+
+        <!-- Tours Populares -->
+        <div>
+          <h3 class="footer-col-title">Tours Populares</h3>
+          <ul class="footer-links" role="list">
+            <li><a href="#tours" class="footer-link" onclick="filtrarPorCategoria('Tradicional')"><i data-lucide="star" class="icon-sm"></i> Islas Sagradas del Titicaca</a></li>
+            <li><a href="#tours" class="footer-link" onclick="filtrarPorCategoria('Tradicional')"><i data-lucide="star" class="icon-sm"></i> Sillustani Arqueológico</a></li>
+            <li><a href="#tours" class="footer-link" onclick="filtrarPorCategoria('Tradicional')"><i data-lucide="star" class="icon-sm"></i> Vivencia en Amantaní</a></li>
+            <li><a href="#tours" class="footer-link" onclick="filtrarPorCategoria('Joya Oculta')"><i data-lucide="gem" class="icon-sm"></i> Aramu Muru Místico</a></li>
+            <li><a href="#tours" class="footer-link" onclick="filtrarPorCategoria('Joya Oculta')"><i data-lucide="gem" class="icon-sm"></i> Cañón de Tinajani</a></li>
+            <li><a href="#tours" class="footer-link" onclick="filtrarPorCategoria('Vivencial')"><i data-lucide="tent" class="icon-sm"></i> Kayak en Llachón</a></li>
+          </ul>
+        </div>
+
+        <!-- Información -->
+        <div>
+          <h3 class="footer-col-title">Información</h3>
+          <ul class="footer-links" role="list">
+            <li><a href="#tours" class="footer-link"><i data-lucide="ticket" class="icon-sm"></i> Ver Catálogo</a></li>
+            <li><a href="#cotizador" class="footer-link"><i data-lucide="clipboard-list" class="icon-sm"></i> Cotizar a Medida</a></li>
+            <li><a href="#" class="footer-link" onclick="mostrarModalLogin(); return false;"><i data-lucide="lock" class="icon-sm"></i> Iniciar Sesión</a></li>
+            <li><a href="#" class="footer-link" onclick="mostrarModalRegistro(); return false;"><i data-lucide="sparkles" class="icon-sm"></i> Crear Cuenta</a></li>
+            <li><a href="https://wa.me/51930844635?text=Hola%2C%20quiero%20información%20sobre%20los%20tours" target="_blank" rel="noopener" class="footer-link"> WhatsApp</a></li>
+          </ul>
+        </div>
+
+        <!-- Contacto -->
+        <div>
+          <h3 class="footer-col-title">Contacto</h3>
+          <div class="footer-contact-item">
+            <span class="icon"><i data-lucide="map-pin" class="icon-sm"></i></span>
+            <span>Jirón Lima N° 458, Plaza de Armas, Puno, Perú</span>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon"><i data-lucide="smartphone" class="icon-sm"></i></span>
+            <a href="https://wa.me/51930844635" target="_blank" rel="noopener">+51 930 844 635</a>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon"><i data-lucide="mail" class="icon-sm"></i></span>
+            <a href="mailto:contacto@rutasdelaltiplano.pe">contacto@rutasdelaltiplano.pe</a>
+          </div>
+          <div class="footer-hours">
+            <strong> Horario de Atención</strong>
+            Lunes a Domingo<br/>
+            6:00 a.m.  9:00 p.m.
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <span>© 2026 Rutas del Altiplano S.A.C. Todos los derechos reservados.</span>
+        <span class="footer-bottom-ruc">RUC: 20609876541</span>
+        
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /landing-page -->
+
+<!-- ===================================================
+     DASHBOARD SECTION
+=================================================== -->
+<section id="dashboard-section" role="main" aria-label="Panel de usuario">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="dashboard-header-inner">
+      <div class="dashboard-user-info">
+        <div class="dashboard-avatar" id="dashboard-avatar">U</div>
+        <div>
+          <div class="dashboard-user-name" id="dashboard-user-name">Usuario</div>
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-top:3px;">
+            <span class="dashboard-role-badge role-turista" id="dashboard-role-badge">Turista</span>
+            <span class="dashboard-user-role" id="dashboard-user-email"></span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.75rem;align-items:center;">
+        <button class="btn btn-ghost btn-sm" id="btn-volver-inicio" onclick="ocultarDashboard()">
+           Volver al Inicio
+        </button>
+        <button class="btn btn-danger btn-sm" id="btn-cerrar-sesion" onclick="handleLogout()">
+          <i data-lucide="log-out" class="icon-sm"></i> Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content">
+    <!-- Tabs -->
+    <div class="dashboard-tabs" role="tablist" id="dashboard-tabs-bar">
+      <button class="dashboard-tab" id="dtab-mi-perfil" role="tab" onclick="switchDashTab('mi-perfil')"><i data-lucide="users" class="icon-sm"></i> Mi Perfil</button>
+      <button class="dashboard-tab active" id="dtab-mis-reservas"  role="tab" onclick="switchDashTab('mis-reservas')"><i data-lucide="ticket" class="icon-sm"></i> Mis Reservas</button>
+      <!-- <button class="dashboard-tab admin-only"        id="dtab-cotizaciones"  role="tab" onclick="switchDashTab('cotizaciones')" style="display:none;"><i data-lucide="clipboard-list" class="icon-sm"></i> Cotizaciones</button> -->
+      <button class="dashboard-tab admin-only" id="dtab-all-reservas" role="tab" onclick="switchDashTab('all-reservas')" style="display:none;"><i data-lucide="bar-chart-3" class="icon-sm"></i> Todas las Reservas</button>
+      <button class="dashboard-tab admin-only" id="dtab-manifiesto" role="tab" onclick="switchDashTab('manifiesto')" style="display:none;"><i data-lucide="clipboard-list" class="icon-sm"></i> Manifiestos</button>
+      <button class="dashboard-tab admin-only" id="dtab-tours-admin" role="tab" onclick="switchDashTab('tours-admin')" style="display:none;"><i data-lucide="mountain" class="icon-sm"></i> Gestión Tours</button>
+      <button class="dashboard-tab admin-only" id="dtab-usuarios"   role="tab" onclick="switchDashTab('usuarios')" style="display:none;"><i data-lucide="users" class="icon-sm"></i> Usuarios</button>
+    </div>
+
+    <!-- Panel: Mi Perfil -->
+    <div class="dashboard-panel" id="dpanel-mi-perfil">
+      <div class="dashboard-panel-header">
+        <div>
+          <div class="dashboard-panel-title"><i data-lucide="users" class="icon-sm"></i> Mi Perfil</div>
+          <div class="dashboard-panel-subtitle">Administra tu información personal</div>
+        </div>
+      </div>
+      <div class="dashboard-panel-content" style="padding: 1.5rem;">
+        <form id="form-mi-perfil" onsubmit="handleActualizarPerfil(event)" style="max-width: 500px;">
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label class="form-label" for="prof-nombre">Nombre completo</label>
+            <input type="text" id="prof-nombre" class="form-input" required />
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label class="form-label" for="prof-email">Correo electrónico</label>
+            <input type="email" id="prof-email" class="form-input" disabled />
+          </div>
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label class="form-label" for="prof-telefono">Teléfono</label>
+            <input type="text" id="prof-telefono" class="form-input" />
+          </div>
+          <div class="form-group" style="margin-bottom:1.5rem;">
+            <label class="form-label" for="prof-password">Nueva Contraseña (opcional)</label>
+            <input type="password" id="prof-password" class="form-input" placeholder="" />
+          </div>
+          <button type="submit" class="btn btn-gold" id="btn-perfil-submit">
+            Guardar Cambios
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Panel: Mis Reservas (turista) -->
+    <div class="dashboard-panel active" id="dpanel-mis-reservas">
+      <div class="dashboard-panel-header">
+        <div>
+          <div class="dashboard-panel-title"><i data-lucide="ticket" class="icon-sm"></i> Mis Reservas</div>
+          <div class="dashboard-panel-subtitle">Historial de tus reservas de tours</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="cargarMisReservas()" id="btn-refresh-mis-reservas"><i data-lucide="refresh-cw" class="icon-sm"></i> Actualizar</button>
+      </div>
+      <div class="data-table-wrapper">
+        <table class="data-table" id="table-mis-reservas">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Tour</th>
+              <th>Fecha Tour</th>
+              <th>Personas</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Creado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-mis-reservas">
+            <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">Cargando reservas...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel: Cotizaciones -->
+    <div class="dashboard-panel" id="dpanel-cotizaciones">
+      <div class="dashboard-panel-header">
+        <div>
+          <div class="dashboard-panel-title"><i data-lucide="clipboard-list" class="icon-sm"></i> Cotizaciones</div>
+          <div class="dashboard-panel-subtitle">Solicitudes de ruta a la medida</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="cargarCotizaciones_Admin()" id="btn-refresh-cotiz"><i data-lucide="refresh-cw" class="icon-sm"></i> Actualizar</button>
+      </div>
+      <div class="data-table-wrapper">
+        <table class="data-table" id="table-cotizaciones">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Destinos</th>
+              <th>Personas</th>
+              <th>Fecha Tentativa</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-cotizaciones">
+            <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem;">Cargando cotizaciones...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel: Todas las Reservas (admin/operaciones) -->
+    <div class="dashboard-panel" id="dpanel-all-reservas">
+      <div class="dashboard-panel-header">
+        <div>
+          <div class="dashboard-panel-title"><i data-lucide="bar-chart-3" class="icon-sm"></i> Todas las Reservas</div>
+          <div class="dashboard-panel-subtitle">Vista completa para operaciones y administración</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="cargarTodasReservas()" id="btn-refresh-all"><i data-lucide="refresh-cw" class="icon-sm"></i> Actualizar</button>
+      </div>
+      <div class="data-table-wrapper">
+        <table class="data-table" id="table-all-reservas">
+          <thead>
+            <tr>
+              <th>Código</th>
+              <th>Cliente</th>
+              <th>Tour</th>
+              <th>Fecha Tour</th>
+              <th>Personas</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-all-reservas">
+            <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel: Manifiestos (guías) -->
+    <div class="dashboard-panel" id="dpanel-manifiesto">
+      <div class="dashboard-panel-header">
+        <div>
+          <div class="dashboard-panel-title"><i data-lucide="clipboard-list" class="icon-sm"></i> Manifiesto de Pasajeros</div>
+          <div class="dashboard-panel-subtitle">Lista de pasajeros por tour y fecha</div>
+        </div>
+      </div>
+      <div class="manifiesto-filters">
+        <select id="manif-paquete" onchange="cargarManifiesto()" aria-label="Filtrar por tour">
+          <option value="">-- Seleccionar Tour --</option>
+          <option value="1">Las Islas Sagradas del Titicaca</option>
+          <option value="2">Arqueología - Sillustani</option>
+          <option value="3">Vivencia en Amantaní</option>
+          <option value="4">Aramu Muru</option>
+          <option value="5">Cañón de Tinajani</option>
+          <option value="6">Ruta del Torito - Pucará</option>
+          <option value="7">Kayak en Llachón</option>
+          <option value="8">Kutimbo</option>
+        </select>
+        <input type="date" id="manif-fecha" onchange="cargarManifiesto()" aria-label="Filtrar por fecha" />
+        <button class="btn btn-gold btn-sm" onclick="cargarManifiesto()" id="btn-refresh-manif"><i data-lucide="refresh-cw" class="icon-sm"></i> Cargar</button>
+      </div>
+      <div class="data-table-wrapper">
+        <table class="data-table" id="table-manifiesto">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Código</th>
+              <th>Pasajero</th>
+              <th>Email</th>
+              <th>Personas</th>
+              <th>Estado</th>
+              <th>Confirmado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-manifiesto">
+            <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">Selecciona un tour y fecha para ver el manifiesto</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel: Gestión Tours (admin) -->
+    <div class="dashboard-panel" id="dpanel-tours-admin">
+      <div class="dashboard-panel-header">
+        <div>
+          <div class="dashboard-panel-title"><i data-lucide="mountain" class="icon-sm"></i> Gestión de Tours</div>
+          <div class="dashboard-panel-subtitle">Administra el catálogo de paquetes turísticos</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="cargarTours_Admin()" id="btn-refresh-tours"><i data-lucide="refresh-cw" class="icon-sm"></i> Actualizar</button>
+      </div>
+      <div class="data-table-wrapper">
+        <table class="data-table" id="table-tours-admin">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tour</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Duración</th>
+              <th>Dificultad</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-tours-admin">
+            <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Panel: Usuarios (admin) -->
+    <div class="dashboard-panel" id="dpanel-usuarios">
+      <div class="dashboard-panel-header">
+        <div>
+          <div class="dashboard-panel-title"><i data-lucide="users" class="icon-sm"></i> Gestión de Usuarios</div>
+          <div class="dashboard-panel-subtitle">Administra roles y permisos</div>
+        </div>
+        <div style="display:flex;gap:0.75rem;">
+          <button class="btn btn-gold btn-sm" onclick="abrirModalNuevoUsuario()"><i data-lucide="users" class="icon-sm"></i> Nuevo Usuario</button>
+          <button class="btn btn-ghost btn-sm" onclick="cargarUsuarios_Admin()" id="btn-refresh-usuarios"><i data-lucide="refresh-cw" class="icon-sm"></i> Actualizar</button>
+        </div>
+      </div>
+      <div class="data-table-wrapper">
+        <table class="data-table" id="table-usuarios">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Rol Actual</th>
+              <th>Registrado</th>
+              <th>Cambiar Rol</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-usuarios">
+            <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /dashboard-content -->
+</section>
+
+<!-- ===================================================
+     TOAST CONTAINER
+=================================================== -->
+<div id="toast-container" role="region" aria-live="polite" aria-label="Notificaciones"></div>
+
+<!-- ===================================================
+     MODAL: LOGIN
+=================================================== -->
+<div class="modal-overlay" id="modal-login" role="dialog" aria-modal="true" aria-labelledby="modal-login-title">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-login-title">Bienvenido de regreso <i data-lucide="mountain-snow" class="icon-sm"></i></h2>
+        <p class="modal-subtitle">Ingresa a tu cuenta para gestionar tus reservas</p>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modal-login')" aria-label="Cerrar"></button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-modal-icon"><i data-lucide="lock" class="icon-sm"></i></div>
+      <form id="form-login" onsubmit="handleLogin(event)" novalidate>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="login-email">Correo electrónico</label>
+          <input type="email" id="login-email" class="form-input" placeholder="tu@email.com" required autocomplete="email" />
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label class="form-label" for="login-password">Contraseña</label>
+          <input type="password" id="login-password" class="form-input" placeholder="" required autocomplete="current-password" minlength="6" />
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;" id="btn-login-submit">
+          Iniciar Sesión 
+        </button>
+      </form>
+      <div class="auth-switch">
+        ¿No tienes cuenta? <a onclick="cerrarModal('modal-login'); mostrarModalRegistro();" id="link-ir-registro">Regístrate gratis</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     MODAL: REGISTRO
+=================================================== -->
+<div class="modal-overlay" id="modal-registro" role="dialog" aria-modal="true" aria-labelledby="modal-registro-title">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-registro-title">Crea tu cuenta <i data-lucide="sparkles" class="icon-sm"></i></h2>
+        <p class="modal-subtitle">Únete y comienza a explorar el Altiplano</p>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modal-registro')" aria-label="Cerrar"></button>
+    </div>
+    <div class="modal-body">
+      <div class="auth-modal-icon"><i data-lucide="mountain-snow" class="icon-sm"></i></div>
+      <form id="form-registro" onsubmit="handleRegistro(event)" novalidate>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="reg-nombre">Nombre completo</label>
+          <input type="text" id="reg-nombre" class="form-input" placeholder="Ej. Juan Quispe Mamani" required autocomplete="name" minlength="3" />
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="reg-email">Correo electrónico</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="tu@email.com" required autocomplete="email" />
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="reg-password">Contraseña</label>
+          <input type="password" id="reg-password" class="form-input" placeholder="Mínimo 6 caracteres" required autocomplete="new-password" minlength="6" />
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label class="form-label" for="reg-password2">Confirmar contraseña</label>
+          <input type="password" id="reg-password2" class="form-input" placeholder="Repite la contraseña" required autocomplete="new-password" minlength="6" />
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;" id="btn-registro-submit">
+          Crear Cuenta 
+        </button>
+      </form>
+      <div class="auth-switch">
+        ¿Ya tienes cuenta? <a onclick="cerrarModal('modal-registro'); mostrarModalLogin();" id="link-ir-login">Inicia sesión</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     MODAL: USUARIO (CRUD)
+=================================================== -->
+<div class="modal-overlay" id="modal-usuario" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-usuario-title">Nuevo Usuario</h2>
+        <p class="modal-subtitle">Completar datos del usuario</p>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modal-usuario')" aria-label="Cerrar"></button>
+    </div>
+    <div class="modal-body">
+      <form id="form-usuario" onsubmit="handleGuardarUsuario(event)" novalidate>
+        <input type="hidden" id="user-edit-id" />
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="us-nombre">Nombre completo</label>
+          <input type="text" id="us-nombre" class="form-input" required />
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="us-email">Correo electrónico</label>
+          <input type="email" id="us-email" class="form-input" required />
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="us-telefono">Teléfono</label>
+          <input type="text" id="us-telefono" class="form-input" />
+        </div>
+        <div class="form-group" id="grp-us-password" style="margin-bottom:1rem;">
+          <label class="form-label" for="us-password">Contraseña</label>
+          <input type="password" id="us-password" class="form-input" />
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label class="form-label" for="us-rol">Rol</label>
+          <select id="us-rol" class="form-select">
+            <option value="turista">Turista</option>
+            <option value="guia">Guía</option>
+            <option value="operaciones">Operaciones</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-gold" style="width:100%;justify-content:center;" id="btn-usuario-submit">
+          Guardar Usuario
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     MODAL: DETALLE TOUR
+=================================================== -->
+<div class="modal-overlay" id="modal-detalle" role="dialog" aria-modal="true" aria-labelledby="modal-detalle-title">
+  <div class="modal modal-lg">
+    <div class="modal-header" style="padding:1.5rem 1.5rem 0;">
+      <div>
+        <h2 class="modal-title" id="modal-detalle-title">Detalle del Tour</h2>
+        <p class="modal-subtitle" id="modal-detalle-subtitle"></p>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modal-detalle')" aria-label="Cerrar"></button>
+    </div>
+    <div class="modal-body" style="padding:0;">
+      <!-- Imagen -->
+      <img id="detalle-img" src="" alt="Tour" class="detalle-tour-img" />
+
+      <div style="padding:1.5rem;">
+        <!-- Badges y precio -->
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1rem;">
+          <div class="detalle-tour-badges" id="detalle-badges"></div>
+          <div class="detalle-tour-price" id="detalle-precio">S/. 0</div>
+        </div>
+
+        <!-- Meta grid -->
+        <div class="detalle-tour-meta-grid" id="detalle-meta-grid"></div>
+
+        <!-- Descripción -->
+        <div style="margin-bottom:1.25rem;">
+          <div class="detalle-section-title"><i data-lucide="book-open" class="icon-sm"></i> Descripción</div>
+          <p id="detalle-descripcion" style="font-size:0.88rem;color:var(--text-muted);line-height:1.8;"></p>
+        </div>
+
+        <!-- Itinerario -->
+        <div style="margin-bottom:1.25rem;">
+          <div class="detalle-section-title"><i data-lucide="calendar" class="icon-sm"></i> Itinerario</div>
+          <div id="detalle-itinerario" style="font-size:0.85rem;color:var(--text-muted);line-height:1.9;"></div>
+        </div>
+
+        <!-- Incluye / No incluye -->
+        <div class="includes-grid" id="detalle-includes"></div>
+
+        <!-- Formulario de Reserva -->
+        <div class="reserva-form" id="reserva-form-wrap">
+          <div class="detalle-section-title" style="margin-bottom:1rem;"><i data-lucide="ticket" class="icon-sm"></i> Reservar este Tour</div>
+          <div id="reserva-auth-check">
+            <!-- Se muestra el form o mensaje según sesión -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     MODAL: TICKET QR
+=================================================== -->
+<div class="modal-overlay" id="modal-ticket" role="dialog" aria-modal="true" aria-labelledby="modal-ticket-title">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title" id="modal-ticket-title"><i data-lucide="ticket" class="icon-sm"></i> ¡Reserva Confirmada!</h2>
+        <p class="modal-subtitle">Guarda tu ticket. Tienes un plazo de 24 horas para pagar, caso contrario se cancelar&aacute; autom&aacute;ticamente.</p>
+      </div>
+      <button class="modal-close" onclick="cerrarModal('modal-ticket')" aria-label="Cerrar"></button>
+    </div>
+    <div class="modal-body">
+      <div class="ticket-card" id="ticket-card-content">
+        <div class="ticket-header">
+          <div style="font-size:1.5rem;margin-bottom:4px;"><i data-lucide="mountain-snow" class="icon-sm"></i></div>
+          <h3>Rutas del Altiplano - Turismo & Experiencias Puno S.A.C.</h3>
+          <div style="font-size:0.8rem;margin-top:4px;opacity:0.7;">RUC: 20609876541</div>
+        </div>
+        <div class="ticket-body">
+          <div class="ticket-info">
+            <div class="ticket-row">
+              <span class="ticket-row-label">Tour:</span>
+              <span class="ticket-row-value" id="ticket-tour-nombre">-</span>
+            </div>
+            <div class="ticket-row">
+              <span class="ticket-row-label">Fecha del Tour:</span>
+              <span class="ticket-row-value" id="ticket-fecha">-</span>
+            </div>
+            <div class="ticket-row">
+              <span class="ticket-row-label">Pasajeros:</span>
+              <span class="ticket-row-value" id="ticket-personas">-</span>
+            </div>
+            <div class="ticket-row">
+              <span class="ticket-row-label">Titular:</span>
+              <span class="ticket-row-value" id="ticket-cliente">-</span>
+            </div>
+            <div class="ticket-row">
+              <span class="ticket-row-label">Estado:</span>
+              <span class="ticket-row-value" id="ticket-estado">Pendiente de confirmación</span>
+            </div>
+            <div class="ticket-row" style="border-bottom:none;">
+              <span class="ticket-row-label">Monto Total:</span>
+              <span class="ticket-row-value ticket-total" id="ticket-monto">S/. 0.00</span>
+            </div>
+          </div>
+          <div class="ticket-qr-wrapper">
+            <div class="ticket-qr-box" id="qr-code-container"></div>
+            <div class="ticket-qr-label">Escanea para<br/>verificar</div>
+          </div>
+        </div>
+        <div style="padding:0 1.5rem 1.5rem;">
+          <div class="ticket-code" id="ticket-codigo">RDA-000000</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;">
+        <button class="btn btn-emerald" id="btn-whatsapp-ticket" onclick="compartirWhatsApp()">
+           Compartir por WhatsApp
+        </button>
+        <button class="btn btn-ghost" onclick="cerrarModal('modal-ticket')" id="btn-ticket-ok">
+           Perfecto, ¡gracias!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================
+     FLOATING WHATSAPP
+=================================================== -->
+<a
+  href="https://wa.me/51930844635?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20los%20tours%20de%20Rutas%20del%20Altiplano"
+  target="_blank"
+  rel="noopener noreferrer"
+  class="whatsapp-float"
+  id="whatsapp-float-btn"
+  aria-label="Contactar por WhatsApp"
+  title="Chatea con nosotros"
+>
+  <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span class="whatsapp-tooltip"><i data-lucide="message-circle" class="icon-sm"></i> ¡Escríbenos!</span>
+</a>
+
+<!-- ===================================================
+     SCRIPTS
+=================================================== -->
+
+<!-- QRCode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+  integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8MY0A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<!-- App JS -->
+<script src="js/app.js"></script>
+
+</body>
+</html>
