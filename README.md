@@ -1,16 +1,17 @@
 # 🌄 Rutas del Altiplano - Plataforma Web de Turismo Puno S.A.C.
 
-> **Agencia de Turismo & Experiencias Puno** | Rutas Tradicionales y Joyas Ocultas del Altiplano
+> **Agencia de Turismo & Experiencias Puno** | Rutas Tradicionales y Joyas Ocultas del Altiplano  
+> 🌐 **Despliegue en Producción (Online):** [https://web-turismo.onrender.com](https://web-turismo.onrender.com)
 
 ---
 
 ## 📋 Tabla de Contenidos
-1. [Requisitos Previos](#requisitos-previos)
-2. [Instalación Paso a Paso](#instalación-paso-a-paso)
-3. [Configurar Base de Datos MySQL](#configurar-base-de-datos-mysql)
-4. [Configurar Variables de Entorno](#configurar-variables-de-entorno)
-5. [Iniciar el Servidor](#iniciar-el-servidor)
-6. [Activar Demostración Web con LocalTunnel](#activar-demostración-web-con-localtunnel)
+1. [Despliegue en Producción (Render + Aiven)](#despliegue-en-producción-render--aiven)
+2. [Requisitos Previos](#requisitos-previos)
+3. [Instalación Paso a Paso](#instalación-paso-a-paso)
+4. [Configurar Base de Datos MySQL](#configurar-base-de-datos-mysql)
+5. [Configurar Variables de Entorno](#configurar-variables-de-entorno)
+6. [Iniciar el Servidor](#iniciar-el-servidor)
 7. [Usuarios de Prueba](#usuarios-de-prueba)
 8. [Solución de Problemas Frecuentes](#solución-de-problemas-frecuentes)
 
