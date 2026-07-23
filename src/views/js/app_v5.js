@@ -465,11 +465,10 @@ async function handleReservarTour(e) {
     document.getElementById('ticket-fecha').textContent = fecha;
     document.getElementById('ticket-personas').textContent = pers;
     document.getElementById('ticket-monto').textContent = 'S/. ' + parseFloat(precioTotal).toFixed(2);
-    document.getElementById('ticket-cliente').textContent = reserva.usuario?.nombre || reserva.nombre_usuario || state.usuario?.nombre || '-';
-  const estadoObj = { pendiente: 'Pendiente', confirmada: 'Confirmada', cancelada: 'Cancelada', completada: 'Completada' };
-  document.getElementById('ticket-estado').textContent = estadoObj[(reserva.estado || 'pendiente').toLowerCase()] || 'Pendiente';
+    document.getElementById('ticket-cliente').textContent = data.reserva.usuario?.nombre || data.reserva.nombre_usuario || state.usuario?.nombre || '-';
+    const estadoObj = { pendiente: 'Pendiente', confirmada: 'Confirmada', cancelada: 'Cancelada', completada: 'Completada' };
+    document.getElementById('ticket-estado').textContent = estadoObj[(data.reserva.estado || 'pendiente').toLowerCase()] || 'Pendiente';
 
-    
     abrirModal('modal-ticket');
     showToast('Reserva exitosa', 'success');
   } catch(err) {
