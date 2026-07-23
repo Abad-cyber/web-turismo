@@ -45,7 +45,7 @@ async function apiFetch(endpoint, method = 'GET', body = null) {
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(API_BASE + endpoint, opts);
   const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Error en la solicitud');
+  if (!res.ok) throw new Error(data.mensaje || data.message || 'Error en la solicitud');
   return data;
 }
 
@@ -267,7 +267,7 @@ async function handleRegistro(e) {
       body: JSON.stringify({nombre, email: email, password: pass})
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Error al registrarse');
+    if (!res.ok) throw new Error(data.mensaje || data.message || 'Error al registrarse');
     showToast('Registro exitoso. Ya puedes iniciar sesion.', 'success');
     mostrarModalLogin(event);
   } catch (err) {
@@ -453,7 +453,7 @@ async function handleReservarTour(e) {
       })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || 'Error al reservar');
+    if (!res.ok) throw new Error(data.mensaje || data.message || 'Error al reservar');
     
     cerrarModal('modal-detalle');
     state.reservaActual = data.reserva;
