@@ -42,7 +42,7 @@ async function create(data) {
   const { id_usuario, id_paquete, fecha_reserva, pasajeros, precio_total, codigo_qr, notas } = data;
 
   // Insertar con código temporal único basado en timestamp para evitar colisiones
-  const tempCode = `TEMP-${Date.now()}-${Math.floor(Math.random()*9999)}`;
+  const tempCode = `T-${Math.floor(Math.random()*999999999)}`;
 
   const [result] = await pool.execute(
     `INSERT INTO reservas (codigo_reserva, id_usuario, id_paquete, fecha_reserva, pasajeros, precio_total, codigo_qr, notas)
