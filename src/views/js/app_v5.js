@@ -335,7 +335,7 @@ function renderCatalogo() {
   cont.innerHTML = p.map(t => `
     <div class="tour-card animate-on-scroll">
       <div class="tour-img-wrap">
-        <img src="${t.imagen || 'https://via.placeholder.com/400x300'}" alt="${t.nombre}" class="tour-img">
+        <img src="${t.imagen ? (t.imagen.includes('/') ? t.imagen : 'img/' + t.imagen) : 'https://via.placeholder.com/400x300'}" alt="${t.nombre}" class="tour-img" onerror="this.src='https://via.placeholder.com/400x300'">
         <div class="tour-badge">${t.categoria}</div>
       </div>
       <div class="tour-content">
@@ -368,7 +368,8 @@ async function abrirModalDetalle(id, event) {
     const res = await fetch(API_BASE + '/paquetes/' + id);
     const p = await res.json();
     state.paqueteDetalle = p.paquete;
-    document.getElementById('detalle-img').src = p.paquete.imagen || 'https://via.placeholder.com/800x400';
+    const imgUrl = p.paquete.imagen ? (p.paquete.imagen.includes('/') ? p.paquete.imagen : 'img/' + p.paquete.imagen) : 'https://via.placeholder.com/800x400';
+    document.getElementById('detalle-img').src = imgUrl;
     document.getElementById('detalle-img').alt = p.paquete.nombre;
     document.getElementById('detalle-badges').innerHTML = '<span class="tour-badge">' + p.paquete.categoria + '</span>';
     document.getElementById('modal-detalle-title').textContent = p.paquete.nombre;
