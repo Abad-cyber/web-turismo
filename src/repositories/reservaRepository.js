@@ -33,17 +33,27 @@ async function generarCodigo() {
  * @param {string} data.notas       - Notas adicionales (opcional)
  * @returns {Promise<Object>} Resultado con insertId y codigo_reserva generado
  */
+/**
+ * Crea una nueva reserva y genera el código basándose en el insertId.
+ * Bug fix 8.1: Eliminada la race condition de generarCodigo() con MAX(id).
+ * El código se genera DESPUÉS del INSERT usando el insertId real.
+ */
 async function create(data) {
   const { id_usuario, id_paquete, fecha_reserva, pasajeros, precio_total, codigo_qr, notas } = data;
 
-  // Generar código único para esta reserva
-  const codigo_reserva = await generarCodigo();
+  // Insertar con código temporal único basado en timestamp para evitar colisiones
+  const tempCode = `TEMP-${Date.now()}-${Math.floor(Math.random()*9999)}`;
 
   const [result] = await pool.execute(
     `INSERT INTO reservas (codigo_reserva, id_usuario, id_paquete, fecha_reserva, pasajeros, precio_total, codigo_qr, notas)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [codigo_reserva, id_usuario, id_paquete, fecha_reserva, pasajeros, precio_total, codigo_qr || null, notas || null]
+    [tempCode, id_usuario, id_paquete, fecha_reserva, pasajeros, precio_total, codigo_qr || null, notas || null]
   );
+
+  // Generar el código definitivo con el insertId real (sin race condition)
+  const codigo_reserva = `RES-${String(result.insertId).padStart(4, '0')}`;
+  await pool.execute('UPDATE reservas SET codigo_reserva = ? WHERE id = ?', [codigo_reserva, result.insertId]);
+
   return { ...result, codigo_reserva };
 }
 
@@ -151,4 +161,16 @@ async function updateEstado(id, estado) {
   return result;
 }
 
-module.exports = { create, findAll, findByUsuario, findById, updateEstado };
+/**
+ * Bug fix 12.1: Actualiza el código QR de una reserva.
+ * Movido aquí desde reservaService para cumplir con el patrón de capas.
+ */
+async function updateCodigoQr(id, codigo_qr) {
+  const [result] = await pool.execute(
+    'UPDATE reservas SET codigo_qr = ? WHERE id = ?',
+    [codigo_qr, id]
+  );
+  return result;
+}
+
+module.exports = { create, findAll, findByUsuario, findById, updateEstado, updateCodigoQr };

@@ -53,19 +53,17 @@ async function crearReserva(id_usuario, id_paquete, fecha_reserva, pasajeros, no
     throw error;
   }
 
-  // Validar que se proporcionó fecha de reserva
-  if (!fecha_reserva) {
-    const error = new Error('La fecha del tour es un campo obligatorio.');
+  // Calcular el precio total de la reserva (después de validar pasajeros)
+  const precio_total = parseFloat((paquete.precio * numPasajeros).toFixed(2));
+
+  // Bug fix 12.2: Validar la fecha antes de llamar toISOString() para evitar RangeError
+  const fechaParsed = new Date(fecha_reserva);
+  if (isNaN(fechaParsed.getTime())) {
+    const error = new Error('La fecha de la reserva es inválida. Usa el formato YYYY-MM-DD.');
     error.status = 400;
     throw error;
   }
-
-  // Calcular el precio total de la reserva
-  const precio_total = parseFloat((paquete.precio * numPasajeros).toFixed(2));
-
-  // Generar código temporal de reserva para el QR (se actualizará con el ID real)
-  // El codigo_reserva definitivo lo genera el repositorio
-  const fechaFormateada = new Date(fecha_reserva).toISOString().split('T')[0];
+  const fechaFormateada = fechaParsed.toISOString().split('T')[0];
 
   // Crear la reserva en la base de datos
   const result = await reservaRepo.create({
@@ -82,11 +80,8 @@ async function crearReserva(id_usuario, id_paquete, fecha_reserva, pasajeros, no
   const codigo_reserva = result.codigo_reserva;
   const codigo_qr = `QR-${codigo_reserva}-${fechaFormateada}`;
 
-  // Actualizar el codigo_qr en la reserva recién creada
-  const [updateResult] = await require('../../config/db').execute(
-    'UPDATE reservas SET codigo_qr = ? WHERE id = ?',
-    [codigo_qr, result.insertId]
-  );
+  // Bug fix 12.1: Usar el repositorio en vez de importar la DB directamente
+  await reservaRepo.updateCodigoQr(result.insertId, codigo_qr);
 
   // Reducir los cupos disponibles del paquete
   const nuevos_cupos = paquete.cupos - numPasajeros;
@@ -176,12 +171,23 @@ async function cambiarEstado(id_reserva, nuevo_estado, rol) {
     throw error;
   }
 
-  // Si se cancela la reserva, restaurar los cupos del paquete
+  // Bug fix 12.3: Manejo bidireccional de cupos al cambiar estado
   if (nuevo_estado === 'cancelada' && reserva.estado !== 'cancelada') {
+    // Restaurar cupos al cancelar
     const paquete = await paqueteRepo.findById(reserva.id_paquete);
     if (paquete) {
-      const cupos_restaurados = paquete.cupos + reserva.pasajeros;
-      await paqueteRepo.updateCupos(reserva.id_paquete, cupos_restaurados);
+      await paqueteRepo.updateCupos(reserva.id_paquete, paquete.cupos + reserva.pasajeros);
+    }
+  } else if (reserva.estado === 'cancelada' && nuevo_estado !== 'cancelada') {
+    // Volver a descontar cupos si se reactiva una reserva cancelada
+    const paquete = await paqueteRepo.findById(reserva.id_paquete);
+    if (paquete) {
+      if (paquete.cupos < reserva.pasajeros) {
+        const error = new Error('No hay cupos suficientes para reactivar esta reserva.');
+        error.status = 409;
+        throw error;
+      }
+      await paqueteRepo.updateCupos(reserva.id_paquete, paquete.cupos - reserva.pasajeros);
     }
   }
 

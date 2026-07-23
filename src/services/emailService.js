@@ -34,7 +34,7 @@ async function sendMailSafely(mailOptions) {
   
   try {
     await transporter.sendMail({
-      from: `"Rutas del Altiplano" <${EMAIL_USER}>`,
+      from: `"SisturPuno" <${EMAIL_USER}>`,
       ...mailOptions
     });
     return true;
@@ -53,21 +53,21 @@ async function enviarCorreoRegistro(nombre, email) {
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #d4af37; border-radius: 8px; overflow: hidden;">
       <div style="background-color: #1a1a1a; color: #d4af37; padding: 20px; text-align: center;">
-        <h1 style="margin: 0;">¡Bienvenido a Rutas del Altiplano!</h1>
+        <h1 style="margin: 0;">¡Bienvenido a SisturPuno!</h1>
       </div>
       <div style="padding: 20px; color: #333;">
         <p>Hola <strong>${nombre}</strong>,</p>
-        <p>Gracias por registrarte en Rutas del Altiplano. Estamos emocionados de tenerte con nosotros y esperamos que encuentres las mejores aventuras en Puno.</p>
+        <p>Gracias por registrarte en SisturPuno. Estamos emocionados de tenerte con nosotros y esperamos que encuentres las mejores aventuras en Puno.</p>
         <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
         <br>
-        <p>Atentamente,<br>El equipo de Rutas del Altiplano</p>
+        <p>Atentamente,<br>El equipo de SisturPuno</p>
       </div>
     </div>
   `;
 
   await sendMailSafely({
     to: email,
-    subject: '¡Bienvenido a Rutas del Altiplano!',
+    subject: '¡Bienvenido a SisturPuno!',
     html
   });
 }
@@ -95,19 +95,19 @@ async function enviarCorreoReserva(nombre, email, tourNombre, fecha, pasajeros, 
           <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Tour:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${tourNombre}</td></tr>
           <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Fecha:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${fecha}</td></tr>
           <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Pasajeros:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${pasajeros}</td></tr>
-          <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Total Pagado:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">$${monto.toFixed(2)}</td></tr>
+          <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Total Pagado:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">S/. ${monto.toFixed(2)}</td></tr>
           <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><strong>Código Reserva:</strong></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${codigoReserva}</td></tr>
         </table>
         <p>Te recomendamos guardar este correo. Muestra el código de reserva a nuestro personal al momento del tour.</p>
         <br>
-        <p>¡Nos vemos pronto!<br>El equipo de Rutas del Altiplano</p>
+        <p>¡Nos vemos pronto!<br>El equipo de SisturPuno</p>
       </div>
     </div>
   `;
 
   await sendMailSafely({
     to: email,
-    subject: `Confirmación de Reserva: ${tourNombre} - Rutas del Altiplano`,
+    subject: `Confirmación de Reserva: ${tourNombre} - SisturPuno`,
     html
   });
 }

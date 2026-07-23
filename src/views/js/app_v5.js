@@ -1,5 +1,5 @@
 /* ============================================================
-   RUTAS DEL ALTIPLANO - app.js
+   SisturPuno - app.js
    Frontend modular para la agencia de turismo
    ============================================================ */
 
@@ -26,23 +26,57 @@ const state = {
 
 /** Leer token del localStorage */
 function getToken() {
-  return localStorage.getItem('rda_token');
+  return localStorage.getItem('sistur_token');
+}
+
+/** URL base dinámica: local o producción */
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000/api'
+  : '/api';
+
+/** Helper fetch autenticado con URL dinámica */
+async function apiFetch(endpoint, method = 'GET', body = null) {
+  const opts = {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+  };
+  const token = getToken();
+  if (token) opts.headers['Authorization'] = 'Bearer ' + token;
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(API_BASE + endpoint, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || 'Error en la solicitud');
+  return data;
 }
 
 /** Guardar sesión en localStorage y actualizar estado */
 function setSession(user, token) {
   state.usuario = user;
   state.token = token;
-  localStorage.setItem('rda_token', token);
-  localStorage.setItem('rda_usuario', JSON.stringify(user));
+  localStorage.setItem('sistur_token', token);
+  localStorage.setItem('sistur_usuario', JSON.stringify(user));
 }
 
 /** Limpiar sesión */
 function clearSession() {
   state.usuario = null;
   state.token = null;
-  localStorage.removeItem('rda_token');
-  localStorage.removeItem('rda_usuario');
+  localStorage.removeItem('sistur_token');
+  localStorage.removeItem('sistur_usuario');
+}
+
+/** Restaurar sesión al recargar la página */
+function loadSession() {
+  const token = localStorage.getItem('sistur_token');
+  const userStr = localStorage.getItem('sistur_usuario');
+  if (token && userStr) {
+    try {
+      state.token = token;
+      state.usuario = JSON.parse(userStr);
+    } catch(e) {
+      clearSession();
+    }
+  }
 }
 
 /** Formatear precio en soles */
@@ -94,9 +128,50 @@ function generateQRCode(texto, elementId) {
 
 // RECOVERY SCRIPT
 
-function abrirModal(id) {
-  const m = document.getElementById(id);
-  if (m) m.classList.add('active');
+// Rastrear la última posición del clic a nivel global para posicionar modales
+window.lastClickPageY = 100;
+document.addEventListener('click', (e) => {
+  if (e.pageY !== undefined) {
+    window.lastClickPageY = e.pageY;
+  }
+}, true);
+
+/**
+ * Abre un modal y lo posiciona en la altura del clic del usuario.
+ * @param {string} id - ID del elemento modal-overlay
+ * @param {MouseEvent|null} event - Evento del clic (opcional)
+ */
+function abrirModal(id, event) {
+  const overlay = document.getElementById(id);
+  if (!overlay) return;
+
+  const modal = overlay.querySelector('.modal');
+  if (modal) {
+    // Convertimos el overlay en un elemento anclado al documento
+    overlay.style.setProperty('position', 'absolute', 'important');
+    overlay.style.setProperty('height', Math.max(document.body.scrollHeight, window.innerHeight) + 'px', 'important');
+    overlay.style.setProperty('display', 'block', 'important');
+    
+    // Obtenemos la altura real del modal (funciona porque visibility:hidden no destruye la geometría)
+    let modalHeight = modal.offsetHeight || 400; // fallback de 400px por si acaso
+    
+    // El usuario pidió que la ventana aparezca "centrada en el clic".
+    // Así que restamos la mitad de la altura de la ventana a la coordenada Y del clic.
+    let topOffset = window.lastClickPageY - (modalHeight / 2);
+    
+    // Evitamos que se corte por la parte superior del documento (mínimo 20px)
+    if (topOffset < 20) topOffset = 20;
+    
+    // Posicionamiento absoluto anclado a la coordenada calculada
+    modal.style.setProperty('position', 'absolute', 'important');
+    modal.style.setProperty('top', topOffset + 'px', 'important');
+    modal.style.setProperty('left', '0', 'important');
+    modal.style.setProperty('right', '0', 'important');
+    modal.style.setProperty('margin', '0 auto', 'important');
+    modal.style.setProperty('margin-bottom', '60px', 'important');
+  }
+
+  overlay.classList.add('active');
 }
 
 function cerrarModal(id) {
@@ -104,14 +179,14 @@ function cerrarModal(id) {
   if (m) m.classList.remove('active');
 }
 
-function mostrarModalLogin() {
+function mostrarModalLogin(event) {
   cerrarModal('modal-registro');
-  abrirModal('modal-login');
+  abrirModal('modal-login', event || null);
 }
 
-function mostrarModalRegistro() {
+function mostrarModalRegistro(event) {
   cerrarModal('modal-login');
-  abrirModal('modal-registro');
+  abrirModal('modal-registro', event || null);
 }
 
 
@@ -124,7 +199,10 @@ function verificarSesion() {
   const btnLoginMob = document.getElementById('btn-login-mobile');
   const btnRegMob = document.getElementById('btn-register-mobile');
   const btnDashMob = document.getElementById('btn-dashboard-mobile');
-  
+  // Bug fix 4.1: Mostrar/ocultar formulario del cotizador según sesión
+  const cotForm = document.getElementById('cotizador-form-wrap');
+  const cotMsg  = document.getElementById('cotizador-auth-msg');
+
   if (token && state.usuario) {
     if (btnLoginNav) btnLoginNav.style.display = 'none';
     if (btnRegNav) btnRegNav.style.display = 'none';
@@ -132,6 +210,8 @@ function verificarSesion() {
     if (btnLoginMob) btnLoginMob.style.display = 'none';
     if (btnRegMob) btnRegMob.style.display = 'none';
     if (btnDashMob) btnDashMob.style.display = 'inline-block';
+    if (cotForm) cotForm.style.display = 'block';
+    if (cotMsg)  cotMsg.style.display  = 'none';
   } else {
     if (btnLoginNav) btnLoginNav.style.display = 'inline-block';
     if (btnRegNav) btnRegNav.style.display = 'inline-block';
@@ -139,6 +219,8 @@ function verificarSesion() {
     if (btnLoginMob) btnLoginMob.style.display = 'inline-block';
     if (btnRegMob) btnRegMob.style.display = 'inline-block';
     if (btnDashMob) btnDashMob.style.display = 'none';
+    if (cotForm) cotForm.style.display = 'none';
+    if (cotMsg)  cotMsg.style.display  = 'block';
   }
 }
 
@@ -150,9 +232,9 @@ async function handleLogin(e) {
   if (!email || !pass) return showToast('Completa todos los campos', 'error');
   try {
     if(btn) { btn.disabled = true; btn.textContent = 'Ingresando...'; }
-    const res = await fetch('http://localhost:3000/api/auth/login', {
+    const res = await fetch(API_BASE + '/auth/login', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({correo: email, password: pass})
+      body: JSON.stringify({email: email, password: pass})
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Error al iniciar sesion');
@@ -173,17 +255,21 @@ async function handleRegistro(e) {
   const nombre = document.getElementById('reg-nombre').value;
   const email = document.getElementById('reg-email').value;
   const pass = document.getElementById('reg-password').value;
+  // Bug fix 4.4: Validar confirmación de contraseña
+  const pass2El = document.getElementById('reg-password2');
+  const pass2 = pass2El ? pass2El.value : pass;
   if (!nombre || !email || !pass) return showToast('Completa todos los campos', 'error');
+  if (pass !== pass2) return showToast('Las contraseñas no coinciden', 'error');
   try {
     if(btn) { btn.disabled = true; btn.textContent = 'Registrando...'; }
-    const res = await fetch('http://localhost:3000/api/auth/registro', {
+    const res = await fetch(API_BASE + '/auth/register', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({nombre, correo: email, password: pass})
+      body: JSON.stringify({nombre, email: email, password: pass})
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Error al registrarse');
     showToast('Registro exitoso. Ya puedes iniciar sesion.', 'success');
-    mostrarModalLogin();
+    mostrarModalLogin(event);
   } catch (err) {
     showToast(err.message, 'error');
   } finally {
@@ -200,13 +286,34 @@ function handleLogout() {
 
 async function cargarCatalogo() {
   try {
-    const res = await fetch('http://localhost:3000/api/paquetes');
+    const res = await fetch(API_BASE + '/paquetes');
     const data = await res.json();
     state.paquetes = data.paquetes || [];
     filtrarPorCategoria('todos');
   } catch (err) {
     console.error('Error cargando catalogo', err);
+    // Bug fix 6.1: Mostrar error al usuario si la API falla
+    const cont = document.getElementById('tours-grid');
+    if (cont) {
+      cont.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>No se pudieron cargar los tours. Verifica tu conexión o intenta más tarde.</p></div>`;
+    }
   }
+}
+
+/** Bug fix 1.1: Función buscarTours (faltaba completamente) */
+function buscarTours(query) {
+  state.busquedaActual = query.toLowerCase().trim();
+  if (!state.busquedaActual) {
+    filtrarPorCategoria(state.categoriaActual);
+    return;
+  }
+  state.paquetesFiltrados = state.paquetes.filter(p => {
+    const matchCat  = state.categoriaActual === 'todos' || p.categoria === state.categoriaActual;
+    const matchText = p.nombre.toLowerCase().includes(state.busquedaActual) ||
+                      (p.descripcion && p.descripcion.toLowerCase().includes(state.busquedaActual));
+    return matchCat && matchText;
+  });
+  renderCatalogo();
 }
 
 function filtrarPorCategoria(cat) {
@@ -220,7 +327,7 @@ function filtrarPorCategoria(cat) {
   renderCatalogo();
 }
 
-let toursLimit = 6;
+let toursLimit = 8;
 function renderCatalogo() {
   const cont = document.getElementById('tours-grid');
   if(!cont) return;
@@ -240,7 +347,7 @@ function renderCatalogo() {
         </div>
         <div class="tour-footer">
           <div class="tour-price">S/ ${t.precio}</div>
-          <button class="btn btn-gold btn-sm" onclick="abrirModalDetalle(${t.id})">Ver m&aacute;s</button>
+          <button class="btn btn-gold btn-sm" onclick="abrirModalDetalle(${t.id}, event)">Ver m&aacute;s</button>
         </div>
       </div>
     </div>
@@ -256,9 +363,9 @@ function cargarMas() {
   renderCatalogo();
 }
 
-async function abrirModalDetalle(id) {
+async function abrirModalDetalle(id, event) {
   try {
-    const res = await fetch('http://localhost:3000/api/paquetes/' + id);
+    const res = await fetch(API_BASE + '/paquetes/' + id);
     const p = await res.json();
     state.paqueteDetalle = p.paquete;
     document.getElementById('detalle-img').src = p.paquete.imagen || 'https://via.placeholder.com/800x400';
@@ -270,6 +377,24 @@ async function abrirModalDetalle(id) {
     document.getElementById('detalle-descripcion').textContent = p.paquete.descripcion;
     document.getElementById('detalle-itinerario').innerHTML = Array.isArray(p.paquete.itinerario) ? p.paquete.itinerario.map(i => '<div style="margin-bottom:8px">&bull; ' + i + '</div>').join('') : (p.paquete.itinerario || 'Itinerario disponible próximamente.');
     
+    // PUNTO 3: Botón Mostrar Mapa va DEBAJO del itinerario, fuera del form
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((p.paquete.nombre || '') + ' Puno, Peru')}`;
+    const itEl = document.getElementById('detalle-itinerario');
+    if (itEl) {
+      // Insertar botón de mapa después del contenedor del itinerario
+      const existingMapBtn = document.getElementById('btn-detalle-mapa');
+      if (existingMapBtn) existingMapBtn.remove();
+      const mapBtn = document.createElement('a');
+      mapBtn.id = 'btn-detalle-mapa';
+      mapBtn.href = mapUrl;
+      mapBtn.target = '_blank';
+      mapBtn.rel = 'noopener';
+      mapBtn.className = 'btn btn-outline';
+      mapBtn.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:1rem;width:100%;justify-content:center;';
+      mapBtn.innerHTML = '<i data-lucide="map-pin" class="icon-sm"></i> Ver en Google Maps';
+      itEl.parentElement.after(mapBtn);
+    }
+
     const authCheck = document.getElementById('reserva-auth-check');
     if (state.token) {
       authCheck.innerHTML = `
@@ -279,7 +404,7 @@ async function abrirModalDetalle(id) {
             <input type="text" id="reserva-fecha" class="form-control" required placeholder="Selecciona una fecha">
           </div>
           <div class="form-group" style="margin-top:1rem;">
-            <label class="form-label">Nmero de personas</label>
+            <label class="form-label">N&uacute;mero de personas</label>
             <input type="number" id="reserva-personas" class="form-control" min="1" max="20" value="1" required>
           </div>
           <button type="submit" class="btn btn-emerald" style="width:100%;margin-top:1.5rem;">Confirmar Reserva</button>
@@ -291,14 +416,14 @@ async function abrirModalDetalle(id) {
     } else {
       authCheck.innerHTML = `
         <div style="background:var(--bg-light);padding:1rem;border-radius:8px;text-align:center;">
-          <p style="margin-bottom:1rem;font-size:0.9rem;">Debes iniciar sesin para reservar.</p>
-          <button class="btn btn-gold btn-sm" onclick="cerrarModal('modal-detalle'); mostrarModalLogin();">Iniciar Sesin</button>
+          <p style="margin-bottom:1rem;font-size:0.9rem;">Debes iniciar sesi&oacute;n para reservar.</p>
+          <button class="btn btn-gold" style="width:100%;" onclick="cerrarModal('modal-detalle'); mostrarModalLogin(event);">Iniciar Sesi&oacute;n</button>
         </div>
       `;
     }
     
     if (typeof lucide !== 'undefined') lucide.createIcons();
-    abrirModal('modal-detalle');
+    abrirModal('modal-detalle', event || null);
   } catch(err) {
     showToast('Error cargando detalles del tour', 'error');
   }
@@ -314,17 +439,16 @@ async function handleReservarTour(e) {
   const precioTotal = p.precio * pers;
   
   try {
-    const res = await fetch('http://localhost:3000/api/reservas', {
+    const res = await fetch(API_BASE + '/reservas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + state.token
       },
       body: JSON.stringify({
-        paquete_id: p.id,
+        id_paquete: p.id,
         fecha_reserva: fecha,
-        pasajeros: pers,
-        precio_total: precioTotal
+        pasajeros: pers
       })
     });
     const data = await res.json();
@@ -333,14 +457,16 @@ async function handleReservarTour(e) {
     cerrarModal('modal-detalle');
     state.reservaActual = data.reserva;
     
-    const qrText = data.reserva.codigo_qr || "RDA-RES-" + data.reserva.id;
+    const qrText = data.reserva.codigo_qr || "SISTUR-RES-" + data.reserva.id;
     generateQRCode(qrText, 'qr-code-container');
     document.getElementById('ticket-codigo').textContent = qrText;
-    document.getElementById('ticket-tour-nombre').textContent = p.paquete.nombre;
+    document.getElementById('ticket-tour-nombre').textContent = p.nombre || '-';
     document.getElementById('ticket-fecha').textContent = fecha;
     document.getElementById('ticket-personas').textContent = pers;
-    document.getElementById('ticket-monto').textContent = 'S/ ' + precioTotal;
-    document.getElementById('ticket-cliente').textContent = state.usuario.nombre;
+    document.getElementById('ticket-monto').textContent = 'S/. ' + parseFloat(precioTotal).toFixed(2);
+    document.getElementById('ticket-cliente').textContent = reserva.usuario?.nombre || reserva.nombre_usuario || state.usuario?.nombre || '-';
+  const estadoObj = { pendiente: 'Pendiente', confirmada: 'Confirmada', cancelada: 'Cancelada', completada: 'Completada' };
+  document.getElementById('ticket-estado').textContent = estadoObj[(reserva.estado || 'pendiente').toLowerCase()] || 'Pendiente';
 
     
     abrirModal('modal-ticket');
@@ -358,7 +484,7 @@ function compartirWhatsApp() {
 
   const tour    = reserva.paquete?.nombre || state.paqueteDetalle?.nombre || '-';
   const fecha   = reserva.fecha_reserva || reserva.fecha_tour;
-  const codigo  = reserva.codigo_qr || reserva.codigo_reserva || `RDA-RES-${reserva.id}`;
+  const codigo  = reserva.codigo_qr || reserva.codigo_reserva || `SISTUR-RES-${reserva.id}`;
   const monto   = reserva.precio_total || reserva.monto_total || 0;
 
   const msg = encodeURIComponent(
@@ -373,6 +499,41 @@ function compartirWhatsApp() {
   window.open(`https://wa.me/51930844635?text=${msg}`, '_blank');
 }
 
+/** Muestra el ticket en el modal con datos de una reserva */
+function mostrarTicket(reserva, paquete) {
+  const qrText = reserva.codigo_qr || reserva.codigo_reserva || `SISTUR-RES-${String(reserva.id).padStart(6,'0')}`;
+  generateQRCode(qrText, 'qr-code-container');
+  document.getElementById('ticket-codigo').textContent = qrText;
+  document.getElementById('ticket-tour-nombre').textContent = paquete?.nombre || reserva.paquete_nombre || '-';
+  document.getElementById('ticket-fecha').textContent = formatDate(reserva.fecha_reserva || reserva.fecha_tour);
+  document.getElementById('ticket-personas').textContent = reserva.pasajeros || reserva.num_personas || '-';
+  document.getElementById('ticket-monto').textContent = formatPrice(reserva.precio_total || reserva.monto_total || 0);
+  document.getElementById('ticket-cliente').textContent = reserva.usuario?.nombre || reserva.nombre_usuario || state.usuario?.nombre || '-';
+  const estadoObj = { pendiente: 'Pendiente', confirmada: 'Confirmada', cancelada: 'Cancelada', completada: 'Completada' };
+  document.getElementById('ticket-estado').textContent = estadoObj[(reserva.estado || 'pendiente').toLowerCase()] || 'Pendiente';
+  abrirModal('modal-ticket');
+}
+
+/** Actualiza los elementos de UI que dependen del estado de sesión */
+function actualizarUIParaSesion() {
+  verificarSesion();
+  const nomEl = document.getElementById('dashboard-user-name');
+  const rolEl = document.getElementById('dashboard-role-badge');
+  const emailEl = document.getElementById('dashboard-user-email');
+  // Bug fix 2.1: ID corregido de 'dashboard-user-avatar' a 'dashboard-avatar'
+  const avatarEl = document.getElementById('dashboard-avatar');
+  if (state.usuario) {
+    if (nomEl) nomEl.textContent = state.usuario.nombre || '';
+    if (emailEl) emailEl.textContent = state.usuario.email || '';
+    if (rolEl) {
+      const rol = state.usuario.rol || 'cliente';
+      rolEl.textContent = rol;
+      rolEl.className = 'dashboard-role-badge role-' + rol;
+    }
+    if (avatarEl) avatarEl.textContent = (state.usuario.nombre || 'U')[0].toUpperCase();
+  }
+}
+
 /* ============================================================
    MÓDULO 7: COTIZADOR
    ============================================================ */
@@ -382,7 +543,7 @@ async function handleCotizacion(evento) {
 
   if (!state.usuario) {
     showToast('Debes iniciar sesión para solicitar una cotización.', 'warning');
-    mostrarModalLogin();
+    mostrarModalLogin(event);
     return;
   }
 
@@ -442,12 +603,52 @@ function mostrarDashboard() {
   const dash = document.getElementById('dashboard-section');
   dash.classList.add('visible');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Ocultar WhatsApp flotante solo si es admin
+  const waBtn = document.getElementById('whatsapp-float-btn');
+  if (waBtn) {
+    if (state.usuario && state.usuario.rol === 'admin') {
+      waBtn.style.setProperty('display', 'none', 'important');
+    } else {
+      waBtn.style.setProperty('display', 'flex', 'important');
+    }
+  }
+
+  const rol = state.usuario?.rol || 'cliente';
+  const esAdmin = rol === 'admin' || rol === 'operaciones' || rol === 'guia';
+
+  // Mostrar/ocultar pestañas según rol de manera detallada
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+  
+  // Ocultar "Mis Reservas" para roles administrativos (solo para clientes)
+  const tabMisReservas = document.getElementById('dtab-mis-reservas');
+  if (tabMisReservas) {
+    tabMisReservas.style.display = (rol === 'cliente') ? 'inline-flex' : 'none';
+  }
+  
+  if (rol === 'admin') {
+    ['dtab-all-reservas', 'dtab-manifiesto', 'dtab-tours-admin', 'dtab-usuarios'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'inline-flex';
+    });
+  } else if (rol === 'operaciones') {
+    ['dtab-all-reservas', 'dtab-manifiesto'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'inline-flex';
+    });
+  } else if (rol === 'guia') {
+    ['dtab-manifiesto'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'inline-flex';
+    });
+  }
 
   // Cargar datos según rol
   cargarMisReservas();
-  if (state.usuario?.rol === 'admin' || state.usuario?.rol === 'operaciones') {
+  if (esAdmin) {
     cargarCotizaciones_Admin();
   }
+  actualizarUIParaSesion();
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
@@ -455,6 +656,12 @@ function ocultarDashboard() {
   document.getElementById('landing-page').style.display = '';
   document.getElementById('dashboard-section').classList.remove('visible');
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // Restaurar WhatsApp flotante al salir del dashboard
+  const waBtn = document.getElementById('whatsapp-float-btn');
+  if (waBtn) {
+    waBtn.style.setProperty('display', 'flex', 'important');
+  }
 }
 
 function switchDashTab(tabId) {
@@ -515,7 +722,7 @@ async function cargarMisReservas() {
 
       return `
       <tr>
-        <td><span class="ticket-code" style="font-size:0.75rem;padding:3px 10px;">${r.codigo_qr || r.codigo_reserva || `RDA-${String(r.id).padStart(6,'0')}`}</span></td>
+        <td><span class="ticket-code" style="font-size:0.75rem;padding:3px 10px;">${r.codigo_qr || r.codigo_reserva || `SISTUR-${String(r.id).padStart(6,'0')}`}</span></td>
         <td><strong>${r.paquete?.nombre || r.paquete_nombre || `Tour #${r.id_paquete}`}</strong></td>
         <td>${formatDate(r.fecha_reserva)}</td>
         <td>${r.pasajeros} persona(s)</td>
@@ -539,6 +746,13 @@ window.mostrarTicketDesdePanel = (idx) => {
   mostrarTicket(r, paquete);
 };
 
+window.mostrarTicketGlobal = (idx) => {
+  const r = state.todasReservas[idx];
+  const paquete = r.paquete || { nombre: r.nombre_paquete || r.paquete_nombre || `Tour #${r.id_paquete}`, precio: r.precio_total / (r.pasajeros || r.num_personas || 1) };
+  state.reservaActual = { ...r, paquete };
+  mostrarTicket(r, paquete);
+};
+
 async function cargarTodasReservas() {
   const tbody = document.getElementById('tbody-all-reservas');
   if (!tbody) return;
@@ -551,28 +765,34 @@ async function cargarTodasReservas() {
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem;">No hay reservas.</td></tr>';
       return;
     }
-    tbody.innerHTML = reservas.map(r => `
+    state.todasReservas = reservas;
+    tbody.innerHTML = reservas.map((r, idx) => `
       <tr>
-        <td><span style="font-family:monospace;font-size:0.78rem;color:var(--gold-primary);">${r.codigo_qr || `RDA-${String(r.id).padStart(6,'0')}`}</span></td>
-        <td>${r.usuario?.nombre || r.usuario_nombre || `Usuario #${r.usuario_id}`}</td>
-        <td>${r.paquete?.nombre || r.paquete_nombre || `Tour #${r.paquete_id}`}</td>
-        <td>${formatDate(r.fecha_tour)}</td>
-        <td>${r.num_personas}</td>
-        <td style="color:var(--gold-primary);font-weight:600;">${formatPrice(r.monto_total)}</td>
+        <td><span style="font-family:monospace;font-size:0.78rem;color:var(--gold-primary);">${r.codigo_qr || r.codigo_reserva || `SISTUR-${String(r.id).padStart(6,'0')}`}</span></td>
+        <td>${r.usuario?.nombre || r.nombre_usuario || `Usuario #${r.id_usuario}`}</td>
+        <td>${r.paquete?.nombre || r.nombre_paquete || `Tour #${r.id_paquete}`}</td>
+        <td>${formatDate(r.fecha_reserva || r.fecha_tour)}</td>
+        <td>${r.pasajeros || r.num_personas}</td>
+        <td style="color:var(--gold-primary);font-weight:600;">${formatPrice(r.precio_total || r.monto_total || 0)}</td>
         <td><span class="status-badge status-${(r.estado||'pendiente').toLowerCase()}">${r.estado || 'Pendiente'}</span></td>
         <td>
-          <select
-            class="form-select"
-            style="padding:6px 10px;font-size:0.78rem;border-radius:8px;"
-            onchange="cambiarEstadoReserva(${r.id}, this.value)"
-            aria-label="Cambiar estado de reserva"
-          >
-            <option value="" disabled selected>Cambiar estado</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="confirmado">Confirmado</option>
-            <option value="cancelado">Cancelado</option>
-            <option value="completado">Completado</option>
-          </select>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <select
+              class="form-select"
+              style="padding:6px 10px;font-size:0.78rem;border-radius:8px;"
+              onchange="cambiarEstadoReserva(${r.id}, this.value)"
+              aria-label="Cambiar estado de reserva"
+            >
+              <option value="" disabled selected>Cambiar estado</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="confirmada">Confirmada</option>
+              <option value="cancelada">Cancelada</option>
+              <option value="completada">Completada</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="mostrarTicketGlobal(${idx})" style="padding:4px 8px;" title="Ver Ticket">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+            </button>
+          </div>
         </td>
       </tr>
     `).join('');
@@ -606,17 +826,37 @@ async function cargarManifiesto() {
     tbody.innerHTML = reservas.map((r, idx) => `
       <tr>
         <td style="font-weight:700;color:var(--gold-primary);">${idx + 1}</td>
-        <td><span style="font-family:monospace;font-size:0.78rem;">${r.codigo_qr || `RDA-${String(r.id).padStart(6,'0')}`}</span></td>
-        <td><strong>${r.usuario?.nombre || r.usuario_nombre || `Usuario #${r.usuario_id}`}</strong></td>
-        <td>${r.usuario?.email || r.usuario_email || '-'}</td>
-        <td style="text-align:center;">${r.num_personas}</td>
+        <td><span style="font-family:monospace;font-size:0.78rem;">${r.codigo_qr || r.codigo_reserva || `SISTUR-${String(r.id).padStart(6,'0')}`}</span></td>
+        <td><strong>${r.usuario?.nombre || r.nombre_usuario || `Usuario #${r.id_usuario}`}</strong></td>
+        <td>${r.usuario?.email || r.email_usuario || '-'}</td>
+        <td style="text-align:center;">${r.pasajeros || r.num_personas}</td>
         <td><span class="status-badge status-${(r.estado||'pendiente').toLowerCase()}">${r.estado || 'Pendiente'}</span></td>
-        <td>${r.estado === 'confirmado' ? '<i data-lucide="check-circle" class="icon-sm"></i>' : '<i data-lucide="clock" class="icon-sm"></i>'}</td>
+        <td>${r.estado === 'confirmada' ? '<i data-lucide="check-circle" class="icon-sm"></i>' : '<i data-lucide="clock" class="icon-sm"></i>'}</td>
       </tr>
     `).join('');
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--error);padding:2rem;"> ${err.message}</td></tr>`;
   }
+}
+
+// Bug fix 3.1: Definir funciones helper que faltaban para cargarTours_Admin
+function getBadgeClass(cat) {
+  if (cat === 'Tradicional') return 'badge-tradicional';
+  if (cat === 'Joya Oculta')  return 'badge-joya';
+  if (cat === 'Vivencial')    return 'badge-vivencial';
+  return 'badge-tradicional';
+}
+function getCategoriaEmoji(cat) {
+  if (cat === 'Tradicional') return '⭐';
+  if (cat === 'Joya Oculta')  return '💎';
+  if (cat === 'Vivencial')    return '⛺';
+  return '🏔️';
+}
+function getDiffClass(diff) {
+  if (diff === 'Fácil' || diff === 'Facil') return 'diff-easy';
+  if (diff === 'Moderada' || diff === 'Moderado') return 'diff-moderate';
+  if (diff === 'Alta' || diff === 'Difícil') return 'diff-hard';
+  return 'diff-easy';
 }
 
 async function cargarTours_Admin() {
@@ -629,20 +869,28 @@ async function cargarTours_Admin() {
     const data = await apiFetch('/paquetes');
     paquetes = data.paquetes || data || [];
   } catch (_) {
-    paquetes = PAQUETES_LOCAL;
+    // Bug fix 3.1: Eliminada referencia a PAQUETES_LOCAL que no existe
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--error);padding:2rem;">Error al cargar los tours. Verifica la conexión.</td></tr>';
+    return;
+  }
+
+  if (paquetes.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:2rem;">No hay tours registrados.</td></tr>';
+    return;
   }
 
   tbody.innerHTML = paquetes.map(p => `
     <tr>
       <td style="color:var(--text-subtle);">#${p.id}</td>
       <td><strong>${p.nombre}</strong></td>
-      <td><span class="tour-badge ${getBadgeClass(p.categoria)}" style="position:static;">${getCategoriaEmoji(p.categoria)} ${p.categoria}</span></td>
+      <td><span class="tour-badge" style="position:static;">${getCategoriaEmoji(p.categoria)} ${p.categoria}</span></td>
       <td style="color:var(--gold-primary);font-weight:700;">${formatPrice(p.precio)}</td>
       <td>${p.duracion}</td>
-      <td><span class="tour-difficulty ${getDiffClass(p.dificultad)}">${p.dificultad}</span></td>
-      <td><span class="status-badge status-confirmado">Activo</span></td>
+      <td>${p.dificultad || '-'}</td>
+      <td><span class="status-badge status-confirmada">${p.activo ? 'Activo' : 'Inactivo'}</span></td>
     </tr>
   `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 async function cargarCotizaciones_Admin() {
@@ -673,11 +921,12 @@ async function cargarCotizaciones_Admin() {
             onchange="cambiarEstadoCotizacion(${c.id}, this.value)"
             aria-label="Cambiar estado de cotización"
           >
-            <option value="" disabled selected>Cambiar</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="revisado">Revisado</option>
-            <option value="confirmado">Confirmado</option>
-            <option value="cancelado">Cancelado</option>
+            <option value="" disabled selected>Cambiar estado</option>
+            <option value="nueva">Nueva</option>
+            <option value="en_revision">En Revisión</option>
+            <option value="cotizada">Cotizada</option>
+            <option value="aceptada">Aceptada (Confirmada)</option>
+            <option value="rechazada">Rechazada</option>
           </select>
         </td>
       </tr>
@@ -711,7 +960,7 @@ async function cargarUsuarios_Admin() {
           </div>
         </td>
         <td>${u.email}</td>
-        <td><span class="dashboard-role-badge role-${u.rol || 'turista'}">${u.rol || 'turista'}</span></td>
+        <td><span class="dashboard-role-badge role-${u.rol || 'cliente'}">${u.rol || 'cliente'}</span></td>
         <td style="color:var(--text-subtle);font-size:0.8rem;">${formatDate(u.createdAt || u.created_at)}</td>
         <td>
           <select
@@ -722,11 +971,22 @@ async function cargarUsuarios_Admin() {
             aria-label="Cambiar rol del usuario"
           >
             <option value="" disabled selected>Cambiar rol</option>
-            <option value="turista">Turista</option>
+            <option value="cliente">Cliente</option>
             <option value="guia">Guía</option>
             <option value="operaciones">Operaciones</option>
             <option value="admin">Admin</option>
           </select>
+        </td>
+        <!-- Bug fix 5.1: Agregar botones de editar y eliminar que faltaban -->
+        <td>
+          <div style="display:flex;gap:4px;">
+            <button class="btn btn-ghost btn-sm" style="padding:4px 8px;" onclick="abrirModalEditarUsuario(${u.id}, '${(u.nombre||'').replace(/'/g,"'")}', '${u.email}', '${u.rol||'cliente'}', '${u.telefono||''}')" title="Editar usuario">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+            </button>
+            <button class="btn btn-sm" style="padding:4px 8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:8px;" onclick="handleEliminarUsuario(${u.id}, '${(u.nombre||'').replace(/'/g,"'")}')" title="Eliminar usuario">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            </button>
+          </div>
         </td>
       </tr>
     `).join('');
@@ -740,6 +1000,12 @@ async function cambiarEstadoReserva(id, estado) {
   try {
     await apiFetch(`/reservas/${id}/estado`, 'PUT', { estado });
     showToast(`Estado actualizado a "${estado}"`, 'success');
+    
+    // Si estamos en la pestaña de todas las reservas, recargarla
+    const allReservasTab = document.getElementById('dtab-all-reservas');
+    if (allReservasTab && allReservasTab.classList.contains('active')) {
+      cargarTodasReservas();
+    }
   } catch (err) {
     showToast(err.message || 'Error al actualizar estado.', 'error');
   }
@@ -884,6 +1150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initLoader();
 
   // Sesión
+  loadSession();
   verificarSesion();
 
   // Modal closers
@@ -914,7 +1181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Set fecha mínima para reservas (se actualiza dinámicamente al abrir el modal)
   const today = new Date().toISOString().split('T')[0];
 
-  console.log('%c Rutas del Altiplano - Frontend cargado', 'color:#FFB300;font-size:14px;font-weight:bold;');
+  console.log('%c SisturPuno - Frontend cargado', 'color:#FFB300;font-size:14px;font-weight:bold;');
   console.log('%cTurismo & Experiencias Puno S.A.C. | RUC: 20609876541', 'color:#94A3B8;font-size:12px;');
   if (typeof lucide !== 'undefined') lucide.createIcons();
 });
@@ -922,27 +1189,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 /* ============================================================
    MÓDULO 12: CRUD USUARIOS Y PERFIL
    ============================================================ */
-function abrirModalNuevoUsuario() {
+function abrirModalNuevoUsuario(event) {
   document.getElementById('form-usuario').reset();
   document.getElementById('user-edit-id').value = '';
   document.getElementById('modal-usuario-title').textContent = 'Nuevo Usuario';
   document.getElementById('grp-us-password').style.display = '';
   document.getElementById('us-password').required = true;
-  abrirModal('modal-usuario');
+  abrirModal('modal-usuario', event || null);
 }
 
-function abrirModalEditarUsuario(id, nombre, email, rol, telefono) {
+function abrirModalEditarUsuario(id, nombre, email, rol, telefono, event) {
   document.getElementById('form-usuario').reset();
   document.getElementById('user-edit-id').value = id;
   document.getElementById('us-nombre').value = nombre;
   document.getElementById('us-email').value = email;
   document.getElementById('us-rol').value = rol;
   document.getElementById('us-telefono').value = telefono !== 'undefined' && telefono ? telefono : '';
-  
+
   document.getElementById('modal-usuario-title').textContent = 'Editar Usuario';
   document.getElementById('grp-us-password').style.display = 'none';
   document.getElementById('us-password').required = false;
-  abrirModal('modal-usuario');
+  abrirModal('modal-usuario', event || null);
 }
 
 async function handleGuardarUsuario(e) {
@@ -987,7 +1254,6 @@ async function handleEliminarUsuario(id, nombre) {
     showToast(err.message || 'Error al eliminar usuario', 'error');
   }
 }
-
 function cargarMiPerfil() {
   if(!state.usuario) return;
   document.getElementById('prof-nombre').value = state.usuario.nombre || '';
@@ -1012,7 +1278,7 @@ async function handleActualizarPerfil(e) {
     const res = await apiFetch('/auth/profile', 'PUT', body);
     state.usuario.nombre = res.usuario?.nombre || nombre;
     state.usuario.telefono = res.usuario?.telefono || telefono;
-    localStorage.setItem('rda_usuario', JSON.stringify(state.usuario));
+    localStorage.setItem('sistur_usuario', JSON.stringify(state.usuario));
     actualizarUIParaSesion();
     showToast('Perfil actualizado ', 'success');
     document.getElementById('prof-password').value = '';
@@ -1027,9 +1293,59 @@ async function handleActualizarPerfil(e) {
 window.pagarReserva = (idx) => {
   const r = state.misReservas[idx];
   const numeroAdmin = "51930844635";
-  const mensaje = "Hola, quiero pagar mi reserva de tour.\nTour: " + (r.paquete_nombre || r.paquete?.nombre || 'Tour') + "\nFecha: " + formatDate(r.fecha_reserva) + "\nCdigo: " + (r.codigo_qr || r.codigo_reserva || r.id) + "\nMonto a pagar: " + formatPrice(r.precio_total) + "\nAqu est mi comprobante de pago:";
+  // Bug fix 4.5: Corregidos errores tipográficos en el mensaje de WhatsApp
+  const mensaje = "Hola, quiero pagar mi reserva de tour.\nTour: " + (r.nombre_paquete || r.paquete_nombre || r.paquete?.nombre || 'Tour') + "\nFecha: " + formatDate(r.fecha_reserva) + "\nCódigo: " + (r.codigo_qr || r.codigo_reserva || r.id) + "\nMonto a pagar: " + formatPrice(r.precio_total) + "\nAquí está mi comprobante de pago:";
   const url = "https://wa.me/" + numeroAdmin + "?text=" + encodeURIComponent(mensaje);
   window.open(url, '_blank');
-};
+}
+
+/** Descargar ticket en PDF */
+window.descargarPDF = function() {
+  try {
+    if (typeof html2pdf === 'undefined') {
+      showToast('Error: Librería PDF no cargada. Intenta recargar la página.', 'error');
+      return;
+    }
+    
+    const element = document.getElementById('ticket-card-content');
+    if (!element) return;
+    
+    // Guardamos el color original
+    const originalBg = element.style.backgroundColor;
+    // Forzamos fondo negro para que el PDF salga igual que el modo oscuro, y ajustamos el padding
+    element.style.backgroundColor = '#0a0a0d';
+    element.style.padding = '20px';
+    element.style.borderRadius = '0'; // Evitar bordes redondeados feos en el PDF
+
+    const reserva = state.reservaActual;
+    const codigo = reserva ? (reserva.codigo_qr || reserva.codigo_reserva || reserva.id || 'ticket') : 'ticket';
+    
+    const opt = {
+      margin:       0,
+      filename:     `SisturPuno_Ticket_${codigo}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0a0a0d' },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    showToast('Generando PDF...', 'info');
+    
+    html2pdf().set(opt).from(element).save().then(() => {
+      showToast('¡PDF descargado con éxito!', 'success');
+      // Restaurar estilos originales
+      element.style.backgroundColor = originalBg;
+      element.style.padding = '1.5rem';
+      element.style.borderRadius = '16px';
+    }).catch(err => {
+      console.error("Error generando PDF:", err);
+      showToast('Error al generar el PDF', 'error');
+      element.style.backgroundColor = originalBg;
+    });
+  } catch(error) {
+    console.error("Excepción en descargarPDF:", error);
+    showToast('Ocurrió un error inesperado al exportar', 'error');
+  }
+}
+
 
 

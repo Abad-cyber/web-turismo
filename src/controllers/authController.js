@@ -27,12 +27,12 @@ async function register(req, res) {
       });
     }
 
-    // Delegar la lógica al servicio de autenticación
-    const authData = await authService.register(nombre, email, password, rol, telefono);
+    // Bug fix 2.1: Forzar rol 'cliente' en registro público para prevenir escalado de privilegios
+    const authData = await authService.register(nombre, email, password, 'cliente', telefono);
 
     return res.status(201).json({
       success: true,
-      mensaje: '¡Usuario registrado exitosamente! Bienvenido a Rutas del Altiplano.',
+      mensaje: '¡Usuario registrado exitosamente! Bienvenido a SisturPuno.',
       usuario: authData.usuario,
       token: authData.token
     });
@@ -128,17 +128,18 @@ async function updateProfile(req, res) {
       return res.status(400).json({ success: false, mensaje: 'El nombre es obligatorio.' });
     }
 
-    // Actualizar nombre y teléfono
-    await usuarioRepo.updateProfile(id, nombre, telefono);
+    // Bug fix 2.2 + 2.3: Validar contraseña ANTES de actualizar cualquier dato
+    // Fix 2.4: Usar req.usuario.email directamente en vez de 2 consultas encadenadas
+    if (password_actual || password_nuevo) {
+      if (!password_actual || !password_nuevo) {
+        return res.status(400).json({ success: false, mensaje: 'Para cambiar la contraseña debes enviar la contraseña actual y la nueva.' });
+      }
 
-    // Actualizar contraseña si se envió
-    if (password_actual && password_nuevo) {
-      // Necesitamos el hash de la contraseña actual, así que buscamos al usuario por email para traer el password
-      const usuarioCompleto = await usuarioRepo.findById(id); // findById no trae el password.
-      // Modificación: necesito una manera de obtener el password. 
-      // Buscar el usuario por email
-      const usuarioFull = await usuarioRepo.findByEmail(usuarioCompleto.email);
-      
+      const usuarioFull = await usuarioRepo.findByEmail(req.usuario.email);
+      if (!usuarioFull) {
+        return res.status(404).json({ success: false, mensaje: 'Usuario no encontrado.' });
+      }
+
       const passwordValido = await bcrypt.compare(password_actual, usuarioFull.password);
       if (!passwordValido) {
         return res.status(400).json({ success: false, mensaje: 'La contraseña actual es incorrecta.' });
@@ -151,6 +152,9 @@ async function updateProfile(req, res) {
       const hashedPassword = await bcrypt.hash(password_nuevo, 10);
       await usuarioRepo.updatePassword(id, hashedPassword);
     }
+
+    // Actualizar nombre y teléfono después de validar contraseña
+    await usuarioRepo.updateProfile(id, nombre, telefono);
 
     const usuarioActualizado = await usuarioRepo.findById(id);
 

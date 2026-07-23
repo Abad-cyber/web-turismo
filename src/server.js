@@ -1,6 +1,6 @@
 /**
  * server.js - Servidor Principal Express
- * Rutas del Altiplano - Agencia de Turismo Puno S.A.C.
+ * SisturPuno - Agencia de Turismo Puno S.A.C.
  *
  * Configura todos los middlewares, monta las rutas de la API REST
  * y sirve el frontend estático desde src/views.
@@ -225,7 +225,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log('');
   console.log('🏔️  ================================================');
-  console.log('🦙  Rutas del Altiplano - Agencia de Turismo Puno');
+  console.log('🏔️  SisturPuno - Agencia de Turismo Puno');
   console.log('🏔️  ================================================');
   console.log(`🚀  Servidor corriendo en: http://localhost:${PORT}`);
   console.log(`📡  API REST disponible en: http://localhost:${PORT}/api`);
